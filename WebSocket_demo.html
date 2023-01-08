@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="connect">连接</button>
+    <button id="send" disabled>发送</button>
+    服务器接收的数据如下：
+    <div id="recv"></div>
+    <script>
+      const connect = document.querySelector('#connect')
+      const send = document.querySelector('#send')
+      const recv = document.querySelector('#recv')
+      let ws = null
+      connect.onclick = function () {
+        ws = new WebSocket('ws://localhost:9998')
+
+        ws.onopen = () => {
+          console.log('连接成功')
+          send.disabled = false
+        }
+
+        ws.onclose = () => {
+          console.log('连接失败')
+          send.disabled = true
+        }
+
+        ws.onmessage = (msg) => {
+          console.log(msg)
+          recv.innerHTML = msg.data
+        }
+      }
+
+      send.onclick = function () {
+        ws.send(
+          JSON.stringify({
+            action: 'getData',
+            socketType: 'trendData',
+            chartName: 'trend',
+            value: '',
+          })
+        )
+      }
+    </script>
+  </body>
+</html>
